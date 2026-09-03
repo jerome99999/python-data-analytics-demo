@@ -1,0 +1,334 @@
+RÉSULTATS ATTENDUS TRANSCRITS DEPUIS LES CAPTURES
+=================================================
+
+Source des captures :
+C:\Users\jphal\Code\code_python\test Tech mchln\test_mchln
+
+Ce document transcrit les contrats et exemples visibles dans les captures.
+Les tableaux NumPy doivent être comparés avec numpy.testing.assert_allclose
+lorsqu'ils contiennent des nombres flottants.
+
+
+1. ENCODAGE DES CLIENTS ET DES COMMANDES
+-----------------------------------------
+
+Signature attendue :
+    anonymize_data(df) -> pandas.DataFrame
+
+Entrée :
+    CustomerName    Order
+0   John Smith      Laptop
+1   Tom Smith       Router
+2   Jane Doe        TV
+3   Alex Williams   Laptop
+4   John Smith      TV
+5   Jane Doe        Ethernet Cable
+
+Règle :
+    - Trier séparément les valeurs uniques de CustomerName et Order par ordre
+      lexicographique.
+    - Remplacer chaque valeur par son rang en commençant à 1.
+    - Conserver l'ordre et l'index des lignes.
+
+Sortie attendue :
+    CustomerName    Order
+0   3               2
+1   4               3
+2   2               4
+3   1               2
+4   3               4
+5   2               1
+
+Remarque : une ancienne sortie visible dans errur_test.PNG commence les codes
+à 0. Cette sortie est explicitement une erreur. La sortie correcte commence à 1.
+
+
+2. CLASSEMENT DES MACHINES À LAVER
+----------------------------------
+
+Signature attendue :
+    rank_washing_machines(scores_df, prices_df) -> pandas.DataFrame
+
+Entrée scores_df :
+     BrandName   Score
+0    Lowell      0.743
+1    Lowell      0.741
+2    Purewash    0.784
+3    Wilson      NaN
+4    Purewash    0.968
+5    Purewash    0.840
+6    Lowell      NaN
+7    Wilson      NaN
+8    Lowell      0.451
+9    Wilson      0.739
+10   Purewash    0.539
+11   Wilson      0.485
+
+Entrée prices_df :
+    BrandName   Price
+0   Lowell      135.75
+1   Purewash    122.61
+2   Wilson      113.67
+
+Règles :
+    - Calculer la moyenne de Score par marque en ignorant les NaN.
+    - Effectuer une jointure interne avec prices_df.
+    - Trier par Price / AvgScore dans l'ordre croissant.
+    - Réinitialiser l'index.
+    - Retourner exactement les colonnes BrandName, Price et AvgScore,
+      dans cet ordre.
+
+Sortie attendue :
+    BrandName   Price    AvgScore
+0   Purewash    122.61   0.78275
+1   Wilson      113.67   0.61200
+2   Lowell      135.75   0.64500
+
+
+3. TOKENISATION D'UNE PHRASE
+-----------------------------
+
+Signature attendue :
+    tokenize_sentence(sentence) -> list[int]
+
+Règles :
+    - Ignorer la ponctuation.
+    - Construire la liste des mots uniques triés par ordre alphabétique.
+    - Attribuer l'identifiant 0 au premier mot, 1 au suivant, etc.
+    - Retourner uniquement la liste des identifiants dans l'ordre de la phrase.
+
+Cas 1 :
+    Entrée :  "they know her , jill . but she does not know them ."
+    Sortie :  [8, 4, 2, 3, 0, 6, 1, 5, 4, 7]
+
+Cas 2 :
+    Entrée :  "we came , we saw , we conquered ."
+    Sortie :  [3, 0, 3, 2, 3, 1]
+
+Cas 3 :
+    Entrée :  "square : a shape that is a rectangle"
+    Sortie :  [4, 0, 3, 5, 1, 0, 2]
+
+
+4. STANDARDISATION LIGNE PAR LIGNE
+-----------------------------------
+
+Signature attendue :
+    standardize_data(arr) -> numpy.ndarray
+
+Règles :
+    - Standardiser chaque ligne indépendamment avec (x - moyenne) / écart-type.
+    - Utiliser l'écart-type de population de NumPy : numpy.std(..., ddof=0).
+    - Si l'écart-type d'une ligne est nul, remplacer toute la ligne par np.inf.
+
+Cas 1 :
+    Entrée :
+        array([
+            [1.2, -0.3, 1.3],
+            [1.2,  2.0, 0.3],
+        ])
+
+    Sortie attendue (approximative) :
+        array([
+            [ 0.63768253, -1.41201131,  0.77432878],
+            [ 0.04800154,  1.20003840, -1.24803994],
+        ])
+
+Cas 2 :
+    Entrée :
+        array([
+            [10.3, 0.5, -1.2],
+            [ 1.0, 1.0,  1.0],
+            [-5.4, 10.0, 1.0],
+        ])
+
+    Sortie attendue (approximative) :
+        array([
+            [ 1.40089141, -0.53273335, -0.86815806],
+            [        inf,         inf,         inf],
+            [-1.15036775,  1.28756757, -0.13719982],
+        ])
+
+Cas 3 :
+    Entrée :
+        array([
+            [7.2, 1.1, -14.0, 10.3],
+            [2.2, 0.0,   0.4,  9.9],
+        ])
+
+    Sortie attendue (approximative) :
+        array([
+            [ 0.64691084, -0.00534637, -1.61995030,  0.97838582],
+            [-0.23134491, -0.78157063, -0.68152959,  1.69444513],
+        ])
+
+
+5. CONVERSION D'UN DATAFRAME EN MATRICE
+---------------------------------------
+
+Signature attendue :
+    df2matrix(df) -> numpy.ndarray
+
+Entrée :
+    FirstName   LastName    GradYear   MeanScore   MedianScore
+0   Jack        Doe         2021       90.6        90.0
+1   Sam         Williams    2022       88.7        88.5
+2   Jenn        Smith       2023       74.2        75.5
+3   Beth        Parker      2022       89.5        89.1
+
+Règles :
+    - Conserver l'ordre des lignes.
+    - Retourner cinq colonnes.
+    - Colonnes 1 et 2 : MeanScore et MedianScore.
+    - Colonnes 3, 4 et 5 : indicateurs pour 2021, 2022 et 2023,
+      dans cet ordre fixe.
+
+Sortie attendue :
+    array([
+        [90.6, 90.0, 1.0, 0.0, 0.0],
+        [88.7, 88.5, 0.0, 1.0, 0.0],
+        [74.2, 75.5, 0.0, 0.0, 1.0],
+        [89.5, 89.1, 0.0, 1.0, 0.0],
+    ])
+
+
+6. PRÉTRAITEMENT DES VARIABLES CATÉGORIELLES
+---------------------------------------------
+
+Signature attendue :
+    preprocess(dataframe) -> pandas.DataFrame
+
+Entrée :
+    transactions   mood     restrictions   integrations    media   price
+0   243243         crash    banned         noIntegration   0.6     9008
+1   578123         stable   Regulated      PayPal          0.7     16065
+2   351780         good     free           nointegration   0.8     17076
+3   34098          NaN      regulated      yandex          0.9     19341
+4   34098          Stable   free           Paypal          0.9     4789
+
+Règles :
+    - Ne conserver que mood, restrictions et integrations.
+    - Remplacer une valeur mood manquante par "stable".
+    - Comparer les catégories sans tenir compte de la casse.
+    - Effectuer un encodage one-hot.
+    - Trier alphabétiquement les catégories dans chaque groupe.
+    - Conserver l'ordre des lignes.
+    - Le nom exact des colonnes n'est pas testé, mais leur ordre l'est.
+
+Ordre logique attendu des colonnes :
+    mood_crash, mood_good, mood_stable,
+    restrictions_banned, restrictions_free, restrictions_regulated,
+    integrations_nointegration, integrations_paypal, integrations_yandex
+
+Sortie attendue :
+    m_crash m_good m_stable r_ban r_free r_reg i_no i_pay i_yan
+0   1       0      0        1     0      0     1    0     0
+1   0       0      1        0     0      1     0    1     0
+2   0       1      0        0     1      0     1    0     0
+3   0       0      1        0     0      1     0    0     1
+4   0       0      1        0     1      0     0    1     0
+
+
+7. AFFECTATION DE POINTS AUX CENTRES LES PLUS PROCHES
+-----------------------------------------------------
+
+Signature attendue :
+    cluster_points(points, cluster_centers) -> dict[str, list[int]]
+
+Règles :
+    - points est un tableau NumPy de forme (nombre_de_points, 3).
+    - cluster_centers associe chaque nom de centre à trois coordonnées.
+    - Affecter chaque point au centre de distance euclidienne minimale.
+    - Représenter un point par son indice de ligne, en commençant à 0.
+    - Retourner les noms des centres associés aux listes d'indices.
+    - Les exemples omettent les centres auxquels aucun point n'est affecté.
+
+Cas 1 :
+    Points :
+        array([
+            [ 18.08,  78.95, -12.73],
+            [ 61.02,  34.75, -40.64],
+            [-83.06, -27.62, -73.54],
+            [ 78.37, -24.72, -54.40],
+            [ -2.01, -92.49, -77.56],
+            [-25.87,  15.34, -81.73],
+            [ 81.98, -16.00,  89.27],
+            [-45.11, -22.49,  44.12],
+            [-35.62, -38.43, -73.62],
+            [-87.98,  54.16, -94.34],
+        ])
+
+    Centres :
+        {
+            "Center1": [68.03, -77.24, 23.50],
+            "Center2": [66.66, -22.67, -38.08],
+            "Center3": [35.01, -72.03, 60.50],
+        }
+
+    Sortie attendue :
+        {
+            "Center2": [0, 1, 2, 3, 4, 5, 8, 9],
+            "Center3": [6, 7],
+        }
+
+Cas 2 :
+    Points :
+        array([
+            [-11.95, 68.14, 52.96],
+            [-44.68, 51.80, 14.19],
+            [  4.35, 77.51, 73.96],
+            [ -6.98, 33.09,  5.83],
+            [ 16.44, 56.20, 53.39],
+        ])
+
+    Centres :
+        {
+            "Center1": [-63.20, 32.15, -22.58],
+            "Center2": [ 83.79, 48.71,  6.32],
+        }
+
+    Sortie attendue :
+        {
+            "Center1": [0, 1, 3],
+            "Center2": [2, 4],
+        }
+
+Cas 3 :
+    Points :
+        array([
+            [-71.76, -36.28, -34.98],
+            [  0.50,  43.86,  51.17],
+            [ 83.63, -91.69, -22.52],
+            [ 32.41, -23.72, -57.40],
+            [  2.98, -46.07,  35.87],
+            [ 78.47, -71.37,  81.04],
+            [ 13.72,  81.15, -85.99],
+            [-89.80, -75.55,  33.54],
+            [ 63.69, -76.08,  93.69],
+            [-27.08,  11.32, -17.20],
+        ])
+
+    Centres :
+        {
+            "Center1": [-43.97,  55.37,   9.15],
+            "Center2": [ 75.30, -18.25,  16.04],
+            "Center3": [-32.18, -87.45,   1.10],
+            "Center4": [-39.56, -13.19, -71.81],
+        }
+
+    Sortie attendue :
+        {
+            "Center1": [1, 9],
+            "Center2": [2, 5, 8],
+            "Center3": [4, 7],
+            "Center4": [0, 3, 6],
+        }
+
+
+8. SUJETS SANS SORTIE DE RÉFÉRENCE DANS LES CAPTURES
+-----------------------------------------------------
+
+Les captures du dossier ne fournissent pas de sortie attendue exploitable pour :
+    - le traitement des valeurs aberrantes avec l'IQR ;
+    - les exemples K-means ajoutés dans data_analysis_github.ipynb ;
+    - les graphiques 2D et 3D.
